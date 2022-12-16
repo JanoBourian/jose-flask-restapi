@@ -58,3 +58,11 @@ from flask import request
 ## Information
 
 We need to retrieve information in a Json format. 
+
+## About python-dotenv and .flaskenv
+
+With this file we can start the server fastest, cause inside the __.flaskenv__ file are all information about the previous steps like "set"
+
+## About flask-smorest
+
+Is for data model, using UUID.
