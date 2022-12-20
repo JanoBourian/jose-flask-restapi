@@ -1,11 +1,11 @@
 from flask import Flask, request, make_response, Response
 from db import stores, items
-import uuid 
+from flask_smorest import abort
+import uuid
+
 app = Flask(__name__)
 
-
-# stores = [{"name": "My Store", "items": [{"name": "Chair", "price": 15.99}]}]
-
+## Store
 @app.get("/store")
 def get_stores() -> dict:
     return {"stores": list(stores.values())}
@@ -14,37 +14,64 @@ def get_stores() -> dict:
 @app.post("/store")
 def create_store() -> Response:
     store_data = request.get_json()
+
+    # Validation
+    if "name" not in store_data:
+        return abort(404, message="Store name is required")
+    for store in stores.values():
+        if store_data["name"] == store["name"]:
+            abort(404, message="Store already exists")
     store_id = uuid.uuid4().hex
     store = {**store_data, "id": store_id}
     stores[store_id] = store
     response = make_response(store, 201)
     return response
 
+
 @app.get("/store/<string:store_id>")
-def get_specific_store(store_id:str):
+def get_specific_store(store_id: str):
     try:
         return stores[store_id]
     except KeyError:
-        return make_response({"message": "Store not found"}, 404)
+        return abort(404, message="Store not found")
+
+
+## Item
+@app.get("/item")
+def get_all_items() -> dict:
+    return {"items": list(items.values())}
+
 
 @app.post("/item")
-def create_items(store_name: str) -> Response:
+def create_items() -> Response:
     item_data = request.get_json()
+
+    # Validation
+    if (
+        "store_id" not in item_data
+        or "name" not in item_data
+        or "price" not in item_data
+    ):
+        return abort(400, "Some argument is empty.")
+    for item in items.values():
+        if (
+            item_data["name"] == item["name"]
+            and item_data["store_id"] == item["store_id"]
+        ):
+            return abort(404, message="Item already exists!")
     if item_data["store_id"] not in stores:
-        return make_response({"message": "Store was not found"}, 404)
+        return abort(404, message="Store not found")
+
     item_id = uuid.uuid4().hex
-    item = {**item_data, "id":item_id}
+    item = {**item_data, "id": item_id}
     items[item_id] = item
     response = make_response(item, 201)
     return response
 
-@app.get("/item")
-def get_all_items() -> dict:
-    return {"items": list(items.values())}
 
 @app.get("/item/<string:item_id>")
 def get_specific_item(item_id: str) -> Response:
     try:
         return items[item_id]
     except KeyError:
-        return make_response({"message": "Item was not found"}, 404)
+        return abort(404, message="Item was not found")

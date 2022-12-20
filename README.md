@@ -65,4 +65,8 @@ With this file we can start the server fastest, cause inside the __.flaskenv__ f
 
 ## About flask-smorest
 
-Is for data model, using UUID.
+Is for data model, using UUID. Flask smorest help us to the response, is similar to make_response but it has a little because with flask-smorest and flask-marshmallow we can create documentation with OpenAPI, and it is so interesting for our development as programmer. 
+
+```python
+abort
+```
