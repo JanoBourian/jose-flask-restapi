@@ -36,6 +36,30 @@ def get_specific_store(store_id: str):
         return abort(404, message="Store not found")
 
 
+@app.put("/store/<string:store_id>")
+def update_specific_store(store_id: str):
+    store_data = request.get_json()
+    if "name" not in store_data:
+        return abort(404, message="Store's name is required")
+    try:
+        store = stores[store_id]
+        store |= store_data
+        return make_response(store, 201)
+    except KeyError:
+        return abort(404, message="Store not exists")
+
+
+@app.delete("/store/<string:store_id>")
+def delete_specific_store(store_id: str):
+    try:
+        del stores[store_id]
+        return make_response({"message": "Store was deleted correctly"}, 201)
+    except KeyError:
+        return abort(
+            404, message="This Store can not be deleted because does not exist"
+        )
+
+
 ## Item
 @app.get("/item")
 def get_all_items() -> dict:
@@ -73,5 +97,27 @@ def create_items() -> Response:
 def get_specific_item(item_id: str) -> Response:
     try:
         return items[item_id]
+    except KeyError:
+        return abort(404, message="Item was not found")
+
+
+@app.put("/item/<string:item_id>")
+def update_specific_item(item_id: str):
+    item_data = request.get_json()
+    if "price" not in item_data or "name" not in item_data:
+        return abort(404, message="You need to put all information")
+    try:
+        item = items[item_id]
+        item |= item_data
+        return make_response(item, 201)
+    except KeyError:
+        return abort(404, message="Item not found!")
+
+
+@app.delete("/item/<string:item_id>")
+def delet_specific_item(item_id: str):
+    try:
+        del items[item_id]
+        return make_response({"message": "Item was deleted"}, 201)
     except KeyError:
         return abort(404, message="Item was not found")
