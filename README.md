@@ -70,3 +70,11 @@ Is for data model, using UUID. Flask smorest help us to the response, is similar
 ```python
 abort
 ```
+
+## Blueprint
+
+## MethodViews
+
+## Marshmallow
+
+## Flask-smorest decorating process
