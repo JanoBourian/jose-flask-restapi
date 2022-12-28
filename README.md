@@ -73,8 +73,16 @@ abort
 
 ## Blueprint
 
+Is a way to divide an API into multiple segments.
+
 ## MethodViews
+
+It can be used to implement the HTTP methods inside a class and create a documentation
 
 ## Marshmallow
 
+We can use marshmallow for create validations (something like pydantic)
+
 ## Flask-smorest decorating process
+
+We can use it for decorating our responses
