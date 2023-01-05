@@ -46,6 +46,7 @@ pip install flask
 pip install black
 pip install flask-smorest
 pip install python-dotenv
+pip install flask-sqlalchemy
 ```
 
 ## Import information
@@ -86,3 +87,74 @@ We can use marshmallow for create validations (something like pydantic)
 ## Flask-smorest decorating process
 
 We can use it for decorating our responses
+
+## Flask SQLAlchemy
+
+Example model:
+
+```python
+from db import db
+
+class ItemModel(db.Model):
+    __tablename__ = "items"
+    
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(80), unique=False, nullable=False)
+    price = db.Column(db.Float(precision=2), nullable=False, unique=False)
+    store_id = db.Column(db.Integer, unique=False, nullable=False)
+```
+
+### One-to-many relationship
+
+```python
+from db import db
+
+class ItemModel(db.Model):
+    __tablename__ = "items"
+    
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(80), unique=False, nullable=False)
+    price = db.Column(db.Float(precision=2), nullable=False, unique=False)
+    store_id = db.Column(db.Integer, db.ForeignKey("stores.id"), unique=False, nullable=False)
+    store = db.relationship("StoreModel", back_populates="items")
+
+class StoreModel(db.Model):
+    __tablename__ = "stores"
+    
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(80), unique=True, nullable=False)
+    items = db.relationship("ItemModel", back_populates="store", lazy="dynamic")
+```
+
+And is too much important pay atention in the new schema structure
+
+```python
+from marshmallow import Schema, fields
+
+class PlainItemSchema(Schema):
+    id = fields.Str(dump_only=True)
+    name = fields.Str(required=True)
+    price = fields.Float(required=True)
+
+
+class PlainStoreSchema(Schema):
+    id = fields.Str(dump_only=True)
+    name = fields.Str(required=True)
+
+
+class ItemUpdateSchema(Schema):
+    name = fields.Str()
+    price = fields.Float()
+
+
+class ItemSchema(PlainItemSchema):
+    store_id = fields.Int(required=True, load_only=True)
+    store = fields.Nested(PlainStoreSchema(), dump_only=True)
+    
+
+class StoreSchema(PlainStoreSchema):
+    items = fields.List(fields.Nested(PlainItemSchema(), dump_only=True))
+
+```
+
+### Many-to-many relationship
