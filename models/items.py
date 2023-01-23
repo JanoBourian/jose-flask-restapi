@@ -7,7 +7,12 @@ class ItemModel(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(80), unique=False, nullable=False)
     price = db.Column(db.Float(precision=2), nullable=False, unique=False)
+    
+    ## foreignkeys
     store_id = db.Column(
         db.Integer, db.ForeignKey("stores.id"), unique=False, nullable=False
     )
+    
+    ## relationships
     store = db.relationship("StoreModel", back_populates="items")
+    tags = db.relationship("TageModel", back_populates="items", secondary = "items_tags")
