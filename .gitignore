@@ -2,3 +2,4 @@ jose-flask-env
 __pycache__
 instance/
 *.db
+blocklist.py

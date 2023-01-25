@@ -1,4 +1,5 @@
 import os
+import secrets 
 
 DEV_CONFIGURATION = {
     "PROPAGATE_EXCEPTIONS": True,
@@ -10,4 +11,5 @@ DEV_CONFIGURATION = {
     "OPENAPI_SWAGGER_UI_URL": "https://cdn.jsdelivr.net/npm/swagger-ui-dist/",
     "SQLALCHEMY_DATABASE_URI": os.getenv("DATABASE_URL", "sqlite:///data.db"),
     "SQLALCHEMY_TRACK_ MODIFICATIONS": True,
+    "JWT_SECRET_KEY": "295561388835026556267132468178473853209" #secrets.SystemRandom().getrandbits(128)
 }
